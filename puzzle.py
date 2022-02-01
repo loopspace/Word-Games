@@ -144,7 +144,7 @@ class Puzzle:
         # Verbose means it prints out lots of interesting information
 
         if self.is_solved():
-            return self.current_words[0]
+            return (self.current_words[0],1)
 
         # Now we iterate through the words, working out how each splits the search space
         divisions = {}
@@ -251,3 +251,65 @@ class Puzzle:
             best_guess = list(word_order.keys())[0]
 
         return best_guess
+
+    def get_next_frequency_guess(self):
+
+        # Array of frequency-by-position
+        freq_pos = []
+        # Seed it with a dictionary for each position
+        for i in range(self.word_length):
+            freq_pos.append({})
+
+            # Each dictionary has letters for keys and 0 for initial value
+            for c in range(97,123):
+                freq_pos[i][chr(c)] = 0
+
+            # Spacer to find letters that actually occur
+            freq_pos[i][" | "] = 0.5
+
+        # Iterate through the current words
+        for w in self.current_words:
+            for i in range(self.word_length):
+                freq_pos[i][w[i]] += 1
+
+        # If we know a letter is in a certain location then all our matching words will have that letter in that location, so we remove that from the frequency list
+        # We do this by seeing how many letters there are in a given position.
+        # Might consider adjusting this so that the positions with many options are given higher priority than the positions with fewer.
+        for i in range(self.word_length):
+            letters = [k for k, v in sorted(freq_pos[i].items(), key=lambda item: -item[1])] # sort letters by frequency
+            nz = letters.index(" | ")
+            for j in range(nz):
+                freq_pos[i][letters[j]] *= (nz - 1)
+
+        # These are the total letter frequencies
+        letter_freqs = {}
+        for c in range(97,123):
+            f = 0
+            for i in range(self.word_length):
+                f += freq_pos[i][chr(c)]
+            letter_freqs[chr(c)] = f
+
+        # Now we iterate through the guessing words, scoring each one
+        word_scores = {}
+
+        for w in self.guessing_words:
+            # Ignore words we've already guessed
+            if w not in self.guesses:
+                score = 0
+                # The score is the sum of the positional frequencies
+                for i in range(len(w)):
+                    score += freq_pos[i][w[i]]
+                # And add the overall frequency for each letter (ignoring repetitions)
+                for c in set(w):
+                    score += letter_freqs[c]
+                word_scores[w] = score
+
+
+        # Order the words by score from highest to lowest
+        word_order = {k: v for k, v in sorted(word_scores.items(), key=lambda item: -item[1])}
+
+        best_guess = list(word_order.keys())[0]
+
+        return best_guess
+
+    
