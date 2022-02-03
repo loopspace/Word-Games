@@ -162,7 +162,6 @@ class Puzzle:
 
         # Order the words by least worst size of group
         word_order = {k: v for k, v in sorted(divisions.items(), key=lambda item: item[1])}
-
   
         # Sort the allowed words by score
         current_word_order = sorted(self.current_words, key=lambda x: divisions[x])
@@ -254,6 +253,15 @@ class Puzzle:
 
     def get_next_frequency_guess(self):
 
+        word_order = self.get_guess_scores()
+
+        best_guess = list(word_order.keys())[0]
+
+        return best_guess
+
+    
+    def get_guess_scores(self):
+
         # Array of frequency-by-position
         freq_pos = []
         # Seed it with a dictionary for each position
@@ -308,8 +316,6 @@ class Puzzle:
         # Order the words by score from highest to lowest
         word_order = {k: v for k, v in sorted(word_scores.items(), key=lambda item: -item[1])}
 
-        best_guess = list(word_order.keys())[0]
-
-        return best_guess
+        return word_order
 
     
