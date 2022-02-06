@@ -35,6 +35,27 @@ def readDictionary(dictionary, word_length, repetition):
                 words.append(w)
     return words
             
+def score_to_int(s):
+    n = 0
+    for c in s:
+        n *= 3
+        n += int(c)
+    return n
+
+def int_to_score(n):
+    s = []
+    for i in range(5):
+        s.insert(0,n%3)
+        n //= 3
+
+    return s
+
+emoji_squares = ["⬛","🟨","🟩"]
+def score_to_emoji(s):
+    e = ""
+    for i in s:
+        e += emoji_squares[i]
+    return e
 
 class Puzzle:
     'A word-guessing puzzle'
