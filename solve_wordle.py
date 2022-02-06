@@ -1,36 +1,28 @@
-from puzzle import Puzzle, wordle_score
-
-def score_to_int(s):
-    n = 0
-    for c in s:
-        n *= 3
-        n += int(c)
-    return n
+from puzzle import Puzzle, wordle_score, score_to_int
 
 wordle = Puzzle("Wordle", 5, True, 'wordle_guessable_words', 'wordle_guessing_words')
 
-
-
-#wordle.generate_scores()
-#wordle.save_scores("wordle_scores")
-#exit()
-
-#wordle.load_scores('wordle_scores')
-
-first_guess = wordle.get_next_divide_guess()
-
-print(f'Guess: {first_guess}')
-score = score_to_int(input("Score :"))
-
-wordle.apply_guess(first_guess, score)
-
+frequency_guess = "soare"
+divide_guess = "arise"
 
 while not wordle.is_solved():
+    if len(wordle.current_words) == 0:
+        print("No solution found")
+        break
     print(f' Words left: {len(wordle.current_words)}')
-    g = wordle.get_next_divide_guess()
-    print(f' Next guess: {g}')
-    score = score_to_int(input("Score :"))
-    wordle.apply_guess(g, score)
+    show_words = input(" Show words (y/n) ")
+    if show_words.lower() == "y":
+        print(" ".join(wordle.current_words))
+    print(f'Suggested guesses, frequency: {frequency_guess}, divide: {divide_guess}')
+    guess = input("Guess: ")
+    if guess == "":
+        break
+    score = score_to_int(input("Score: "))
 
-print(f'Solution: {wordle.current_words[0]}')
+    wordle.apply_guess(guess, score)
+    frequency_guess = wordle.get_next_frequency_guess()
+    divide_guess = wordle.get_next_divide_guess()[0]
+
+if wordle.is_solve():
+    print(f'Solution: {wordle.current_words[0]}')
 
