@@ -1,6 +1,6 @@
 from puzzle import Puzzle, wordle_score, score_to_int
 
-wordle = Puzzle("Wordle", 5, True, 'wordle_guessable_words', 'wordle_guessing_words')
+wordle = Puzzle('wordle_guessable_words', 'wordle_guessing_words')
 
 frequency_guess = "soare"
 divide_guess = "arise"
@@ -23,6 +23,6 @@ while not wordle.is_solved():
     frequency_guess = wordle.get_next_frequency_guess()
     divide_guess = wordle.get_next_divide_guess()[0]
 
-if wordle.is_solve():
+if wordle.is_solved():
     print(f'Solution: {wordle.current_words[0]}')
 
