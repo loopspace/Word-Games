@@ -41,9 +41,9 @@ for i in range(7):
 # The -1 represents "no pattern", so when the count "wraps round" then
 # it wraps round to 0 so that we don't have gaps in the patterns.
 pattern = [-1]*6
-pattern[0] = 0
 
-patterns = []
+# patterns = []
+number_of_patterns = 0
 
 while True:
     found = False
@@ -57,8 +57,9 @@ while True:
             found = True
             break
     if found:
-        patterns.append(pattern)
-        print(f'\r{len(patterns)}', end= '')
+        number_of_patterns += 1
+#        patterns.append(pattern)
+        print(f'\r{number_of_patterns}', end= '')
     i = 0
     pattern[i] += 1
     while pattern[i] == 241:
@@ -67,7 +68,7 @@ while True:
         if i == len(pattern):
             break
         if pattern[i] == -1:
-            print(f'\rThere are {len(patterns)} patterns of length up to {i}')
+            print(f'\rThere are {number_of_patterns} patterns of length up to {i}')
         pattern[i] += 1
 
-print(f'There are {len(patterns)} patterns in total')
+print(f'There are {number_of_patterns} patterns in total')
