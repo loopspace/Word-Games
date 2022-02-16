@@ -1,6 +1,11 @@
 from puzzle import Puzzle, wordle_score
 
-wordle = Puzzle("Wordle", 5, True, 'wordle_guessable_words', 'wordle_guessing_words')
+#
+# This program produces a file of all the patterns that *don't* occur
+# with a particular word.
+#
+
+wordle = Puzzle('wordle_guessable_words', 'wordle_guessing_words')
 
 patterns = {}
 zeros = {}
