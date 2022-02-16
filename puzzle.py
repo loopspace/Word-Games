@@ -62,18 +62,20 @@ class Puzzle:
 
     def __init__(
             self,
-            style,
-            word_length,
-            repetitions,
             allowed_words,
-            guessing_words
+            guessing_words,
+            hard_mode = False,
+            style = "wordle",
+            word_length = 5,
+            repetitions = True,
     ):
-        if style == "Wordle":
+        if style.lower() == "wordle":
             self.score_function = wordle_score
         else:
             self.score_function = dots_and_stars_score
 
         self.word_length = word_length
+        self.hard_mode = hard_mode
 
         self.guessable_words = readDictionary(
             allowed_words,
@@ -90,6 +92,11 @@ class Puzzle:
             word_length,
             repetitions
         )
+
+        self.current_guesses = []
+        for w in self.guessing_words:
+            self.current_guesses.append(w)
+        
         self.guesses = []
         self.all_scores = {}
 
@@ -99,6 +106,9 @@ class Puzzle:
                 return self.all_scores[w][g]
         return self.score_function(w,g)
 
+    def compatible_guess(self,gg,g,s):
+        return True
+    
     def load_scores(self, score_file):
         all_scores = {}
         for w in self.guessable_words:
@@ -135,6 +145,11 @@ class Puzzle:
             if self.score_function(w,g) == s:
                 words_to_keep.append(w)
         self.current_words = words_to_keep
+        guesses_to_keep = []
+        for gg in self.current_guesses:
+            if self.compatible_guess(gg,g,s):
+                guesses_to_keep.append(gg)
+        self.current_guesses = guesses_to_keep
 
     def apply_guesses(self,guesses):
         for g in guesses:
@@ -142,9 +157,12 @@ class Puzzle:
 
     def reset_scores(self):
         self.current_words = []
+        self.current_guesses = []
         self.guesses = []
         for w in self.guessable_words:
             self.current_words.append(w)
+        for w in self.guessing_words:
+            self.current_guesses.append(w)
             
     def is_solved(self):
         if len(self.current_words) == 1:
@@ -170,7 +188,7 @@ class Puzzle:
         # Now we iterate through the words, working out how each splits the search space
         divisions = {}
 
-        for g in self.guessing_words:
+        for g in self.current_guesses:
             answers = [0]*243
             for w in self.current_words:
                 answers[
@@ -206,7 +224,7 @@ class Puzzle:
         divisions = {}
 
         m = 0
-        for g in self.guessing_words:
+        for g in self.current_guesses:
             m += 1
             answers = [0]*243
             for w in self.current_words:
@@ -245,8 +263,8 @@ class Puzzle:
         # Now we iterate through the words, working out how each splits the search space
         divisions = {}
 
-        for g in self.guessing_words:
-          for gg in self.guessing_words:
+        for g in self.current_guesses:
+          for gg in self.current_guesses:
             answers = [0]*243*243
             for w in self.current_words:
                 answers[
@@ -321,7 +339,7 @@ class Puzzle:
         # Now we iterate through the guessing words, scoring each one
         word_scores = {}
 
-        for w in self.guessing_words:
+        for w in self.current_guesses:
             # Ignore words we've already guessed
             if w not in self.guesses:
                 score = 0
