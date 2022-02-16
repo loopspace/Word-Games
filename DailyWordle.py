@@ -7,6 +7,7 @@ parser.add_argument('-d', '--day', metavar='N', type=int, dest='days', default=0
 parser.add_argument('-e', '--emoji', action='store_true' , dest='emoji', help='use emoji for the patterns')
 parser.add_argument('-s', '--show', action='store_true' , dest='show', help='show the details of the analysis')
 parser.add_argument('-w', '--word', action='store_true' , dest='word', help='show the word')
+parser.add_argument('-n', '--nyt', action='store_true' , dest='nyt', help='use the NYT word lists')
 
 args = parser.parse_args()
 
@@ -14,8 +15,14 @@ if args.emoji:
     display_score = lambda s: score_to_emoji(int_to_score(s))
 else:
     display_score = lambda s: " ".join([str(x) for x in int_to_score(s)])
-    
-wordle = Puzzle("Wordle", 5, True, 'wordle_guessable_words', 'wordle_guessing_words')
+
+if args.nyt:
+    word_list_prefix = 'nytwordle_'
+    version = "NYT"
+else:
+    word_list_prefix = 'wordle_'
+    version = "original"
+wordle = Puzzle(word_list_prefix + 'guessable_words', word_list_prefix + 'guessing_words')
 
 wordle_day = datetime.now().timetuple().tm_yday + 195 + args.days
 
@@ -27,9 +34,9 @@ else:
     output = lambda x: None
 
 if args.word:
-    output(f'Wordle {wordle_day} {daily_wordle}')
+    output(f'Wordle {wordle_day} ({version} version) {daily_wordle}')
 else:
-    output(f'Wordle {wordle_day}')
+    output(f'Wordle {wordle_day} ({version} version)')
     
 
 output('Frequency Analysis')
@@ -90,9 +97,11 @@ while True:
 if guess != daily_wordle:
     m += 1
 
-print(f'Daily #Wordle ({wordle_day}) Ranking')
+print(f'Daily #Wordle ({wordle_day},easy,{version} version) Rating')
+print()
+print('Strategies:')
 print(f'    Frequency: {f}')
-print(f'   Guess List: {n}')
+print(f'   Fixed List: {n}')
 print(f'       Minmax: {m}')
 
 zeros = {}
